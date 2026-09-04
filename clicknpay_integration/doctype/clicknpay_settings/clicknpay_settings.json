@@ -1,0 +1,106 @@
+{
+  "actions": [],
+  "allow_rename": 0,
+  "creation": "2025-01-12 00:00:00",
+  "doctype": "DocType",
+  "editable_grid": 1,
+  "engine": "InnoDB",
+  "field_order": [
+    "mode_section",
+    "mode",
+    "test_public_id",
+    "live_public_id",
+    "column_break_1",
+    "create_url",
+    "status_url",
+    "payment_section",
+    "default_currency",
+    "auto_create_payment",
+    "default_mode_of_payment"
+  ],
+  "fields": [
+    {
+      "fieldname": "mode_section",
+      "fieldtype": "Section Break",
+      "label": "Mode & Credentials"
+    },
+    {
+      "fieldname": "mode",
+      "fieldtype": "Select",
+      "label": "Mode",
+      "options": "Test\nLive",
+      "default": "Test",
+      "reqd": 1
+    },
+    {
+      "fieldname": "test_public_id",
+      "fieldtype": "Data",
+      "label": "Test Public Unique ID",
+      "description": "From openapi.africa - Test e.g. HQGVaTYJihldpvzsw",
+      "default": "HQGVaTYJihldpvzsw"
+    },
+    {
+      "fieldname": "live_public_id",
+      "fieldtype": "Data",
+      "label": "Live Public Unique ID",
+      "description": "From openapi.africa dashboard - Live"
+    },
+    {
+      "fieldname": "column_break_1",
+      "fieldtype": "Column Break"
+    },
+    {
+      "fieldname": "create_url",
+      "fieldtype": "Data",
+      "label": "Create Order URL",
+      "default": "https://backendservices.clicknpay.africa:2081/payme/orders"
+    },
+    {
+      "fieldname": "status_url",
+      "fieldtype": "Data",
+      "label": "Status URL",
+      "default": "https://backendservices.clicknpay.africa:2081/payme/orders/top-paid"
+    },
+    {
+      "fieldname": "payment_section",
+      "fieldtype": "Section Break",
+      "label": "Payment Handling"
+    },
+    {
+      "fieldname": "default_currency",
+      "fieldtype": "Select",
+      "label": "Default Currency",
+      "options": "USD\nZWG\nZWL\nAED",
+      "default": "USD"
+    },
+    {
+      "fieldname": "auto_create_payment",
+      "fieldtype": "Check",
+      "label": "Auto Create Payment Entry on Success",
+      "default": 1
+    },
+    {
+      "fieldname": "default_mode_of_payment",
+      "fieldtype": "Link",
+      "label": "Mode of Payment",
+      "options": "Mode of Payment",
+      "default": "ClicknPay"
+    }
+  ],
+  "issingle": 1,
+  "links": [],
+  "modified": "2025-01-12 00:00:00",
+  "module": "ClicknPay Integration",
+  "name": "ClicknPay Settings",
+  "owner": "Administrator",
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1
+    }
+  ],
+  "sort_field": "modified"
+}

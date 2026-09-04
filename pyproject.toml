@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "clicknpay_integration"
+version = "1.0.0"
+description = "Frappe integration for ClicknPay (openapi.africa)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["requests"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0,<17.0.0"

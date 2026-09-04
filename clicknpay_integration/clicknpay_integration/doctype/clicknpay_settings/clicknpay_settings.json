@@ -1,0 +1,57 @@
+{
+  "allow_rename": 0,
+  "creation": "2025-01-12 00:00:00",
+  "doctype": "DocType",
+  "engine": "InnoDB",
+  "field_order": [
+    "mode",
+    "test_public_id",
+    "live_public_id",
+    "create_url",
+    "status_url"
+  ],
+  "fields": [
+    {
+      "fieldname": "mode",
+      "fieldtype": "Select",
+      "label": "Mode",
+      "options": "Test\nLive",
+      "default": "Test",
+      "reqd": 1
+    },
+    {
+      "fieldname": "test_public_id",
+      "fieldtype": "Data",
+      "label": "Test Public Unique ID",
+      "default": "HQGVaTYJihldpvzsw"
+    },
+    {
+      "fieldname": "live_public_id",
+      "fieldtype": "Data",
+      "label": "Live Public Unique ID"
+    },
+    {
+      "fieldname": "create_url",
+      "fieldtype": "Data",
+      "label": "Create URL",
+      "default": "https://backendservices.clicknpay.africa:2081/payme/orders"
+    },
+    {
+      "fieldname": "status_url",
+      "fieldtype": "Data",
+      "label": "Status URL",
+      "default": "https://backendservices.clicknpay.africa:2081/payme/orders/top-paid"
+    }
+  ],
+  "issingle": 1,
+  "module": "ClicknPay Integration",
+  "name": "ClicknPay Settings",
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1,
+      "write": 1,
+      "create": 1
+    }
+  ]
+}

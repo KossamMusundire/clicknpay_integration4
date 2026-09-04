@@ -1,0 +1,115 @@
+{% extends "templates/web.html" %}
+
+{% block title %}Payment {{ status_label }} - GW Keys{% endblock %}
+
+{% block head_include %}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+.payment-wrapper{
+  max-width:640px;margin:60px auto;padding:0 20px;
+  font-family:Inter,sans-serif;
+}
+.payment-card{
+  background:linear-gradient(180deg,#fff 0%,#fbfdfb 100%);
+  border-radius:28px;padding:44px 36px;text-align:center;
+  box-shadow:0 24px 48px -12px rgba(15,42,26,0.18),0 0 0 1px rgba(46,125,50,0.06);
+  border:1px solid rgba(255,255,255,0.8);
+  border-top:5px solid {% if is_success %}#2E7D32{% else %}#c62828{% endif %};
+  position:relative;overflow:hidden;
+  animation:slideUp 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.icon-circle{
+  width:88px;height:88px;margin:0 auto 18px;border-radius:50%;
+  display:grid;place-items:center;font-size:44px;
+  box-shadow:0 0 0 8px rgba(232,245,233,0.6),0 12px 24px -8px rgba(0,0,0,0.15);
+}
+.icon-success{background:linear-gradient(135deg,#E8F5E9 0%,#C8E6C9 100%);}
+.icon-failed{background:linear-gradient(135deg,#ffebee 0%,#ffcdd2 100%);}
+.payment-title{
+  font-family:Outfit,sans-serif;font-weight:800;font-size:28px;letter-spacing:-0.6px;
+  color:{% if is_success %}#0f2a1a{% else %}#b71c1c{% endif %};margin-bottom:8px;
+}
+.payment-subtitle{color:#5a7a67;font-size:14px;line-height:1.6;margin-bottom:20px;}
+.detail-box{
+  background:#f6faf7;border:1px solid #d7ead8;border-radius:16px;padding:16px 18px;
+  text-align:left;margin:20px 0;font-size:13px;color:#1b4332;
+}
+.detail-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #e0e8e4}
+.detail-row:last-child{border-bottom:none}
+.btn-primary{
+  display:inline-flex;background:linear-gradient(135deg,#1a4d2e,#2E7D32);color:#fff;
+  padding:13px 28px;border-radius:14px;font-weight:700;text-decoration:none;
+  box-shadow:0 10px 24px -8px rgba(46,125,50,0.45);transition:all 0.22s;
+  font-family:Outfit,sans-serif;margin:6px;
+}
+.btn-primary:hover{transform:translateY(-2px);color:#fff;box-shadow:0 14px 32px -10px rgba(46,125,50,0.5);}
+.btn-secondary{
+  display:inline-flex;background:#fff;border:1.5px solid #dde9df;color:#1a4d2e;
+  padding:13px 24px;border-radius:14px;font-weight:600;text-decoration:none;
+  font-family:Outfit,sans-serif;margin:6px;transition:all 0.2s;
+}
+.btn-secondary:hover{background:#f1f8f1;border-color:#a5d6a7;transform:translateY(-1px);}
+.reason-box{
+  background:#fff3e0;border:1px solid #ffcc80;border-radius:12px;padding:12px 14px;
+  font-size:12px;color:#e65100;margin:16px 0;text-align:left;
+}
+</style>
+{% endblock %}
+
+{% block page_content %}
+<div class="payment-wrapper">
+  <div class="payment-card">
+    {% if is_success %}
+      <div class="icon-circle icon-success">✅</div>
+      <h1 class="payment-title">Payment Successful!</h1>
+      <p class="payment-subtitle">
+        Thank you! Your payment for invoice <b>{{ invoice }}</b> has been confirmed via ClicknPay.<br>
+        Your membership is now active.
+      </p>
+    {% else %}
+      <div class="icon-circle icon-failed">❌</div>
+      <h1 class="payment-title">Payment {{ status_label }}</h1>
+      <p class="payment-subtitle">
+        Your payment for invoice <b>{{ invoice }}</b> could not be completed.<br>
+        No money was charged. You can retry or contact support.
+      </p>
+      {% if reason %}
+      <div class="reason-box">
+        <b>Reason:</b> {{ reason }}
+      </div>
+      {% endif %}
+    {% endif %}
+
+    <div class="detail-box">
+      <div class="detail-row"><span>Invoice:</span><b>{{ invoice }}</b></div>
+      {% if customer_name %}<div class="detail-row"><span>Customer:</span><b>{{ customer_name }}</b></div>{% endif %}
+      {% if amount %}<div class="detail-row"><span>Amount:</span><b>{{ amount }}</b></div>{% endif %}
+      <div class="detail-row"><span>Status:</span><b style="color:{% if is_success %}#2E7D32{% else %}#c62828{% endif %}">{{ status_label }}</b></div>
+      {% if subscription %}<div class="detail-row"><span>Subscription:</span><b>{{ subscription }}</b></div>{% endif %}
+    </div>
+
+    <div style="margin-top:24px">
+      {% if is_success %}
+        <a href="/home" class="btn-primary">← Back to Homepage</a>
+        {% if subscription %}<a href="/subscriptions/{{ subscription }}" class="btn-secondary">View Subscription</a>{% endif %}
+      {% else %}
+        {% if subscription %}
+          <a href="/subscriptions/{{ subscription }}?invoice={{ invoice }}" class="btn-primary">🔁 Try Again via ClicknPay</a>
+        {% else %}
+          <a href="/subscriptions" class="btn-primary">🔁 Try Again</a>
+        {% endif %}
+        <a href="/home" class="btn-secondary">Back to Homepage</a>
+        <div style="margin-top:14px">
+          <a href="https://wa.me/263773000000" style="font-size:12px;color:#5a7a67;text-decoration:none">Need help? Chat on WhatsApp</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="margin-top:22px;text-align:center">
+      <img src="/files/clicknpay_button.png" onerror="this.src='/files/paynowbutton.png'" style="max-width:260px;border-radius:12px;opacity:0.9;box-shadow:0 8px 20px rgba(0,0,0,0.08)">
+      <div style="font-size:10px;color:#9bb0a3;margin-top:8px">Secure via ClicknPay • VISA • Mastercard • ZimSwitch • EcoCash • OneMoney • InnBucks</div>
+    </div>
+  </div>
+</div>
+{% endblock %}
