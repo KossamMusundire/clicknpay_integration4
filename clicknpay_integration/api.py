@@ -103,6 +103,7 @@ def check_status(reference):
     try:
         r = requests.get(f"{settings['status_url']}/{reference}", timeout=15)
         data = r.json()
+        # Normalize - some APIs return list
         if isinstance(data, list) and data:
             return data[0]
         return data
@@ -123,17 +124,21 @@ def clicknpay_callback():
     try:
         status_data = check_status(ref)
         status_val = (status_data.get("status") or status_data.get("paymentStatus") or "UNKNOWN").upper()
+        # Handle list response where status inside
         if not status_val or status_val == "UNKNOWN":
+            # Sometimes API returns transactionStatus
             status_val = (status_data.get("transactionStatus") or status_data.get("orderStatus") or "UNKNOWN").upper()
     except Exception as e:
         frappe.log_error(title="ClicknPay Callback Status Fetch Failed", message=f"Ref {ref}: {e}")
         status_val = "FAILED"
 
+    # Success handling
     if status_val in ("SUCCESS", "PAID", "COMPLETED", "APPROVED"):
         try:
             if frappe.db.exists("Sales Invoice", ref):
                 inv = frappe.get_doc("Sales Invoice", ref)
                 if inv.outstanding_amount > 0:
+                    # Check duplicate PE
                     existing = frappe.get_all("Payment Entry", filters={"reference_no": ref, "docstatus": ["<", 2]}, limit=1)
                     if not existing:
                         pe = frappe.get_doc({
@@ -154,25 +159,13 @@ def clicknpay_callback():
                         frappe.db.commit()
         except Exception:
             frappe.log_error(title="ClicknPay Callback PE Error", message=frappe.get_traceback())
+            # Don't fail the redirect - still show success but log
             status_val = "SUCCESS_WITH_WARNING"
 
+    # Always redirect to success page, even on failure - never throw 500
     frappe.local.response["type"] = "redirect"
     reason = frappe.form_dict.get("reason") or status_data.get("message") or ""
+    # Sanitize reason for URL
     import urllib.parse
     reason_qs = f"&reason={urllib.parse.quote_plus(str(reason)[:200])}" if reason else ""
     frappe.local.response["location"] = f"{get_url()}/payment-success?invoice={ref}&status={status_val}{reason_qs}"
-
-# ===== NEW: DIRECT GUEST PAY LINK FOR INVOICE EMAIL & PDF =====
-@frappe.whitelist(allow_guest=True)
-def pay_invoice(invoice_name=None):
-    invoice_name = invoice_name or frappe.form_dict.get("invoice_name") or frappe.form_dict.get("reference") or frappe.form_dict.get("clientReference")
-    if not invoice_name:
-        frappe.throw("Missing invoice_name")
-
-    result = initiate_payment(reference=invoice_name)
-
-    if result.get("status") == "success" and result.get("redirect_url"):
-        frappe.local.response["type"] = "redirect"
-        frappe.local.response["location"] = result["redirect_url"]
-    else:
-        frappe.throw(f"Payment init failed: {result.get('message')}")
